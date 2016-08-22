@@ -1,0 +1,48 @@
+#!/bin/sh
+set -e
+
+# expects inotify-tools to be installed
+
+usage() {
+    printf "Usage: %s [OPTIONS] COMMAND\n\
+OPTIONS\n\
+\t-w <pattern> watches files provided by pattern for change to execute COMMAND\n\
+\t-e <regex> excludes files based on regex\n\
+\t-s shell use a shell of your own to execute COMMAND\n" $(basename $0)
+}
+
+watch="."
+exclude=
+shell="bash -c"
+while getopts :w:e opt
+do
+    case $opt in
+	f) watch=$OPTARG
+	   ;;
+	e) exclude=$OPTARG
+	   ;;
+	s) shell=$OPTARG
+	   ;;
+	'?') usage
+	   exit 1
+	   ;;
+    esac
+done
+shift $((OPTIND - 1))
+
+
+while true
+do
+    if [ -z "$exclude" ]
+    then
+	inotifywait -e modify -e move -e create -e delete \
+		    --exclude '.*~' --exclude '\.#.*' \
+		    -q $watch &>/dev/null
+    else
+	inotifywait -e modify -e move -e create -e delete \
+		    --exclude '.*~' --exclude '^.#.*' --exclude $exclude \
+		    -q $watch &> /dev/null
+    fi
+    echo "> $@"
+    $shell "$@"
+done
