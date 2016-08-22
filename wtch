@@ -1,0 +1,51 @@
+#!/bin/sh
+set -e
+
+usage() {
+    printf "Usage: %s [OPTIONS] COMMAND...\n\
+OPTIONS\n\
+-s time to sleep between repitions, defaults to 2 seconds\n\
+-n number of executions, infinite by default\n" $(basename $0)
+}
+
+verbose=
+to_sleep=2
+no_of_execs=1000
+
+while getopts :s:n:v opt
+do
+    case $opt in
+	s) to_sleep=$OPTARG
+	   ;;
+	n) no_of_execs=$OPTARG
+	   ;;
+	v) verbose=true
+	   ;;
+	'?') usage
+	   exit 1
+	   ;;
+    esac
+done
+shift $((OPTIND - 1))
+  
+to_exec(){
+    eval "$@"
+}
+
+printline(){
+    printf '.%.0s' $(seq 2 $(tput cols))
+    printf "\n"
+}
+
+printline
+for i in $(seq 1 $no_of_execs)
+do
+    if [ "$verbose" = "true" ]
+    then
+	echo "$@"
+    fi
+    
+    to_exec $@
+    sleep $to_sleep
+    printline
+done

@@ -5,6 +5,7 @@ set -e
 
 usage() {
     printf "Usage: %s [OPTIONS] COMMAND\n\
+This tool executes COMMAND on file changes\n\
 OPTIONS\n\
 \t-w <pattern> watches files provided by pattern for change to execute COMMAND\n\
 \t-e <regex> excludes files based on regex\n\
