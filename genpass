@@ -1,0 +1,25 @@
+#!/bin/sh
+#
+# Script to generate random passwords
+
+n=12
+usage() {
+    printf "Usage: %s [OPTIONS]\n\
+OPTIONS\n\
+-n length of the password, default %d\n" $(basename $0) $n
+}
+
+while getopts :n: opt
+do
+    case $opt in
+	n) n=$OPTARG
+	   ;;
+	'?') usage
+	   exit 1
+	   ;;
+    esac
+done
+shift $((OPTIND - 1))
+
+
+< /dev/urandom tr -dc _\@\#A-Z-a-z-0-9 | head -c${1:-$n};echo;
