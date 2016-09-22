@@ -1,0 +1,12 @@
+#!/bin/sh
+
+set -e
+
+logfile=$LOGFILE
+if [[ -z $logfile ]]; then
+    logfile=$HOME/mylog
+fi
+
+date=$(date +"%D %T")
+
+echo "- " $date "$@" >> $logfile
