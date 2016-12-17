@@ -2,11 +2,39 @@
 
 set -e
 
-logfile=$LOGFILE
-if [[ -z $logfile ]]; then
-    logfile=$HOME/mylog
+usage() {
+    printf "Usage: %s [OPTIONS] ENTRY\n\
+This tool adds a log entry to Google Calendar\n\
+OPTIONS\n\
+\t-l specify length of duration in minutes, defaults to 30\n\
+\t-d specify date in format mm/dd/yyyy, defaults to today\n\
+\t-t specify time in format hh:mm, defaults to current time\n" $(basename $0)
+}
+
+date=$(date +%D)
+time=$(date +%H:%M)
+length="30"
+
+while getopts :d:t:l: opt
+do
+    case $opt in
+	d) date=$OPTARG
+	   ;;
+	t) time=$OPTARG
+	   ;;
+	l) length=$OPTARG
+	   ;;
+	'?') usage
+	   exit 1
+	   ;;
+    esac
+done
+shift $((OPTIND - 1))
+
+title=$@
+if [ -z "$title" ]; then
+    usage
+    exit 1
 fi
 
-date=$(date +"%D %T")
-
-echo "- " $date "$@" >> $logfile
+gcalcli add --calendar 'Log' --when "$date $time" --title "$title" --duration $length --reminder 0 --where '' --description ''
