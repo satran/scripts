@@ -1,0 +1,11 @@
+#!/bin/sh
+set -xe
+
+todo=${TODOFILE}
+if [[ -z $todo ]]; then
+    todo=$HOME/todo.txt
+fi
+
+
+id=$(tail -n1 ${todo} | awk '{print $1+1}')
+echo "${id} $(date -Iseconds) ${@}" >> ${todo}

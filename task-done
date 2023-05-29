@@ -1,0 +1,21 @@
+#!/bin/sh
+set -e
+
+todo=${TODOFILE}
+if [[ -z $todo ]]; then
+    todo=$HOME/todo.txt
+fi
+
+task=$(awk '{$2="";todos[$1]=$0} \
+  /@done/ {match ($0, /@done\([0-9]*\)/);\
+  id=substr($0,RSTART+6, RLENGTH-7); # 6 for the @done( \
+  				     # 7 for the ) and the @done \
+	   delete todos[id]; # remove the done task \
+	   delete todos[$1]} # remove the done event \
+  END { for (key in todos) {print todos[key]} }' ${todo} | fzf)
+
+#task=$(cat ${todo} | grep -v @done | fzf)
+taskid=$(echo "${task}" | awk '{print $1}')
+id=$(tail -n1 ${todo} | awk '{print $1+1}')
+
+echo "${id} $(date -Iseconds) @done(${taskid})" >> ${todo}
