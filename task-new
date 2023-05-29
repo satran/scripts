@@ -1,5 +1,5 @@
 #!/bin/sh
-set -xe
+set -e
 
 todo=${TODOFILE}
 if [[ -z $todo ]]; then

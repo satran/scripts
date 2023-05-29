@@ -1,0 +1,10 @@
+#!/bin/sh
+set -e
+
+todo=${TODOFILE}
+if [[ -z $todo ]]; then
+    todo=$HOME/todo.txt
+fi
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+awk -f ${DIR}/task-list-not-done.awk ${todo}
