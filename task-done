@@ -6,7 +6,8 @@ if [[ -z $todo ]]; then
     todo=$HOME/todo.txt
 fi
 
-task=$(task list-not-done | fzf)
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+task=$(${DIR}/lib/task-list-not-done | fzf)
 
 #task=$(cat ${todo} | grep -v @done | fzf)
 taskid=$(echo "${task}" | awk '{print $1}')
